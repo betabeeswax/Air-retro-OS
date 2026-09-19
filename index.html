@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Air Retro OS - Multi-System Game Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --bg:     #0f1419;   /* main background */
@@ -16,218 +17,98 @@
             --border: #2a3548;   /* border color */
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: var(--bg);
             color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
-            padding: 20px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            font-size: 28px;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 6px;
-        }
-
-        p.subtitle {
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        /* Navigation Tabs */
-        .tab-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            background-color: var(--card);
-            color: var(--muted);
-            border: 1px solid var(--border);
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn:hover {
-            color: var(--text);
-            border-color: var(--accent);
-        }
-
-        .tab-btn.active {
-            background-color: var(--accent);
-            color: var(--bg);
-            border-color: var(--accent);
-        }
-
-        /* Control Panel Card */
-        .controls-card {
+        /* Custom UI Component Classes */
+        .card-bg {
             background-color: var(--card);
             border: 1px solid var(--border);
-            padding: 20px;
-            border-radius: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            max-width: 850px;
-            width: 100%;
         }
 
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        label {
-            font-size: 12px;
-            font-weight: bold;
+        .text-muted-custom {
             color: var(--muted);
-            text-transform: uppercase;
         }
 
-        select, input[type="file"], .btn {
-            background-color: var(--bg);
-            color: var(--text);
-            border: 1px solid var(--border);
-            padding: 10px 14px;
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        select:focus {
-            border-color: var(--accent);
-        }
-
-        .btn {
+        .btn-accent {
             background-color: var(--accent);
             color: var(--bg);
-            font-weight: bold;
-            border: none;
-            transition: opacity 0.2s;
+            font-weight: 700;
+            transition: opacity 0.2s, transform 0.1s;
         }
-
-        .btn:hover {
+        .btn-accent:hover {
             opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .btn-accent:active {
+            transform: translateY(0);
         }
 
-        .btn-toggle {
+        .btn-outline {
             background-color: var(--card);
-            color: var(--syn);
-            border: 1px solid var(--syn);
+            border: 1px solid var(--border);
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
-        .btn-toggle.active {
-            background-color: var(--syn);
-            color: var(--bg);
+        .btn-toggle-active {
+            background-color: var(--syn) !important;
+            color: var(--bg) !important;
+            border-color: var(--syn) !important;
+            font-weight: 700;
         }
 
-        /* Screen Wrapper & CRT Overlays */
-        .screen-wrapper {
+        /* Console Bezel Frames */
+        .screen-frame {
             position: relative;
-            width: 800px;
-            height: 520px;
-            max-width: 100%;
             background-color: #000;
             border-radius: 12px;
-            border: 3px solid var(--border);
+            border: 4px solid var(--border);
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            transition: border-color 0.3s ease;
         }
 
-        /* Console Bezel Styling */
-        .screen-wrapper.nes { border-color: #e88a8a; }
-        .screen-wrapper.snes { border-color: #8f75be; }
-        .screen-wrapper.gb { border-color: #6bcf9a; }
-        .screen-wrapper.gba { border-color: #5b9fd4; }
+        .screen-frame.nes { border-color: var(--ant); }
+        .screen-frame.snes { border-color: #a78bfa; }
+        .screen-frame.gb { border-color: var(--syn); }
+        .screen-frame.gba { border-color: var(--accent); }
+        .screen-frame.segaMD { border-color: #64748b; }
+        .screen-frame.n64 { border-color: #f59e0b; }
+        .screen-frame.nds { border-color: #38bdf8; }
+        .screen-frame.psx { border-color: #94a3b8; }
 
+        /* CRT Overlay Effect */
         .crt-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             pointer-events: none;
             z-index: 10;
             background: linear-gradient(
                 rgba(18, 16, 16, 0) 50%, 
-                rgba(0, 0, 0, 0.25) 50%
+                rgba(0, 0, 0, 0.35) 50%
             );
             background-size: 100% 4px;
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
-        .placeholder-screen {
-            text-align: center;
-            color: var(--muted);
-            padding: 20px;
-        }
-
-        .placeholder-screen h3 {
-            color: var(--text);
-            margin-bottom: 8px;
-        }
-
-        #emulator-container {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* On-Screen Controller Mode */
-        .virtual-controller {
-            display: none;
-            margin-top: 20px;
-            width: 100%;
-            max-width: 600px;
-            background-color: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 20px;
-            user-select: none;
-        }
-
-        .virtual-controller.visible {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .d-pad {
+        /* Virtual Controller D-Pad Grid */
+        .d-pad-grid {
             display: grid;
-            grid-template-columns: repeat(3, 45px);
-            grid-template-rows: repeat(3, 45px);
-            gap: 2px;
+            grid-template-columns: repeat(3, 44px);
+            grid-template-rows: repeat(3, 44px);
+            gap: 3px;
         }
 
-        .pad-btn {
+        .pad-button {
             background-color: var(--bg);
             border: 1px solid var(--border);
             color: var(--text);
@@ -236,22 +117,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            user-select: none;
+            touch-action: manipulation;
             cursor: pointer;
         }
 
-        .pad-btn:active {
+        .pad-button:active, .pad-button.active {
             background-color: var(--accent);
             color: var(--bg);
         }
 
-        .action-btns {
-            display: flex;
-            gap: 15px;
-        }
-
-        .action-btn {
-            width: 55px;
-            height: 55px;
+        .action-button {
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             background-color: var(--ant);
             color: var(--bg);
@@ -260,124 +138,187 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
-
-        .action-btn.b-btn {
+        .action-button:active {
+            transform: scale(0.95);
+        }
+        .action-button.b-button {
             background-color: var(--syn);
         }
 
-        /* Canvas Game Section */
-        #homebrew-canvas {
-            background-color: #000;
-            display: block;
+        /* Navigation Tab Active Styling */
+        .nav-tab.active {
+            background-color: var(--accent);
+            color: var(--bg);
+            font-weight: 700;
+            border-color: var(--accent);
         }
     </style>
 </head>
-<body>
+<body class="flex flex-col items-center p-4 md:p-6">
 
-    <header>
-        <h1>Air Retro OS</h1>
-        <p class="subtitle">WebAssembly Retro Emulation Engine & Classic Arcade Platform</p>
+    <header class="text-center mb-6">
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-wider uppercase" style="color: var(--accent);">Air Retro OS</h1>
+        <p class="text-sm text-muted-custom mt-1">Universal WebAssembly Emulator & Arcade Mini-Games Suite</p>
     </header>
 
-    <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('roms')">ROM Emulator</button>
-        <button class="tab-btn" onclick="switchTab('homebrew')">Built-in Game (Space Defense)</button>
-    </div>
+    <!-- App Navigation Tabs -->
+    <nav class="flex gap-3 mb-6">
+        <button id="tab-btn-roms" class="nav-tab active btn-outline px-5 py-2.5 rounded-lg text-sm font-semibold" onclick="switchMainTab('roms')">
+            🕹️ ROM Emulator
+        </button>
+        <button id="tab-btn-arcade" class="nav-tab btn-outline px-5 py-2.5 rounded-lg text-sm font-semibold" onclick="switchMainTab('arcade')">
+            👾 Mini-Games Arcade
+        </button>
+    </nav>
 
-    <!-- TAB 1: ROM EMULATOR -->
-    <div id="tab-roms" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-        <div class="controls-card">
-            <div class="control-group">
-                <label for="systemSelect">System</label>
-                <select id="systemSelect" onchange="updateConsoleStyle()">
-                    <option value="nes">Nintendo (NES)</option>
-                    <option value="snes">Super Nintendo (SNES)</option>
-                    <option value="gb">Game Boy</option>
-                    <option value="gbc">Game Boy Color</option>
-                    <option value="gba">Game Boy Advance</option>
-                    <option value="segaMD">Sega Genesis</option>
-                    <option value="n64">Nintendo 64</option>
-                    <option value="nds">Nintendo DS</option>
-                    <option value="psx">PlayStation 1</option>
+    <!-- ================= TAB 1: ROM EMULATOR ================= -->
+    <main id="section-roms" class="w-full max-w-4xl flex flex-col items-center">
+        <!-- Control Deck Card -->
+        <div class="card-bg p-5 rounded-xl w-full mb-5 shadow-lg">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-bold uppercase text-muted-custom mb-1.5" for="systemSelect">Console System</label>
+                    <select id="systemSelect" class="w-full card-bg text-sm text-white rounded-lg p-2.5 outline-none border focus:border-accent" style="border-color: var(--border);" onchange="updateConsoleStyle()">
+                        <option value="nes">Nintendo (NES)</option>
+                        <option value="snes">Super Nintendo (SNES)</option>
+                        <option value="gb">Game Boy</option>
+                        <option value="gbc">Game Boy Color</option>
+                        <option value="gba">Game Boy Advance</option>
+                        <option value="segaMD">Sega Genesis / Mega Drive</option>
+                        <option value="n64">Nintendo 64</option>
+                        <option value="nds">Nintendo DS</option>
+                        <option value="psx">PlayStation 1</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-muted-custom mb-1.5" for="romInput">Select Local ROM File</label>
+                    <input type="file" id="romInput" accept=".nes,.snes,.smc,.gb,.gbc,.gba,.gen,.md,.z64,.n64,.nds,.iso,.bin,.zip" class="w-full card-bg text-xs text-white rounded-lg p-2 border outline-none" style="border-color: var(--border);">
+                </div>
+
+                <button class="btn-accent py-2.5 px-4 rounded-lg text-sm" onclick="loadRom()">
+                    🚀 Launch Game
+                </button>
+
+                <button id="controllerToggleBtn" class="btn-outline py-2.5 px-4 rounded-lg text-sm font-semibold" onclick="toggleControllerMode()">
+                    🎮 Controller Mode: OFF
+                </button>
+            </div>
+        </div>
+
+        <!-- Display Screen Frame -->
+        <div id="screenWrapper" class="screen-frame nes w-full h-[500px] flex items-center justify-center relative">
+            <div id="crtOverlay" class="crt-overlay"></div>
+            
+            <div id="romPlaceholder" class="text-center p-6 max-w-md z-0">
+                <div class="text-4xl mb-3">🎮</div>
+                <h3 class="text-xl font-bold mb-2 text-white">System Ready</h3>
+                <p class="text-sm text-muted-custom mb-4">Choose your preferred retro system, select a valid game ROM file from your local disk, and click Launch Game.</p>
+                <span class="inline-block px-3 py-1 text-xs rounded-full bg-slate-800 text-slate-400 border border-slate-700">Supports .nes, .snes, .gb, .gba, .z64, .nds & zip files</span>
+            </div>
+
+            <div id="emulator-container" class="w-full h-full relative z-0"></div>
+        </div>
+
+        <!-- Virtual Touch / Mouse Controller Overlay -->
+        <div id="virtualController" class="hidden card-bg rounded-xl p-5 mt-5 w-full max-w-xl flex items-center justify-between shadow-xl">
+            <!-- D-Pad -->
+            <div class="d-pad-grid">
+                <div></div>
+                <div class="pad-button" id="pad-up" onmousedown="triggerKey('ArrowUp', true)" onmouseup="triggerKey('ArrowUp', false)" ontouchstart="triggerKey('ArrowUp', true)" ontouchend="triggerKey('ArrowUp', false)">▲</div>
+                <div></div>
+                <div class="pad-button" id="pad-left" onmousedown="triggerKey('ArrowLeft', true)" onmouseup="triggerKey('ArrowLeft', false)" ontouchstart="triggerKey('ArrowLeft', true)" ontouchend="triggerKey('ArrowLeft', false)">◀</div>
+                <div class="pad-button bg-slate-800"></div>
+                <div class="pad-button" id="pad-right" onmousedown="triggerKey('ArrowRight', true)" onmouseup="triggerKey('ArrowRight', false)" ontouchstart="triggerKey('ArrowRight', true)" ontouchend="triggerKey('ArrowRight', false)">▶</div>
+                <div></div>
+                <div class="pad-button" id="pad-down" onmousedown="triggerKey('ArrowDown', true)" onmouseup="triggerKey('ArrowDown', false)" ontouchstart="triggerKey('ArrowDown', true)" ontouchend="triggerKey('ArrowDown', false)">▼</div>
+                <div></div>
+            </div>
+
+            <!-- Start / Select -->
+            <div class="flex gap-2">
+                <button class="btn-outline text-xs px-3 py-1.5 rounded uppercase" onmousedown="triggerKey('ShiftRight', true)" onmouseup="triggerKey('ShiftRight', false)">Select</button>
+                <button class="btn-outline text-xs px-3 py-1.5 rounded uppercase" onmousedown="triggerKey('Enter', true)" onmouseup="triggerKey('Enter', false)">Start</button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+                <button class="action-button b-button" onmousedown="triggerKey('KeyX', true)" onmouseup="triggerKey('KeyX', false)" ontouchstart="triggerKey('KeyX', true)" ontouchend="triggerKey('KeyX', false)">B</button>
+                <button class="action-button" onmousedown="triggerKey('KeyZ', true)" onmouseup="triggerKey('KeyZ', false)" ontouchstart="triggerKey('KeyZ', true)" ontouchend="triggerKey('KeyZ', false)">A</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- ================= TAB 2: MINI-GAMES ARCADE ================= -->
+    <main id="section-arcade" class="w-full max-w-4xl flex flex-col items-center hidden">
+        <!-- Arcade Game Selector Header -->
+        <div class="card-bg p-4 rounded-xl w-full mb-5 flex flex-wrap items-center justify-between gap-4 shadow-lg">
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-bold uppercase text-muted-custom">Select Game:</span>
+                <select id="arcadeGameSelect" class="card-bg text-sm font-bold text-white rounded-lg p-2 outline-none border focus:border-accent" style="border-color: var(--border);" onchange="changeArcadeGame()">
+                    <option value="space">🚀 Space Defense (Shooter)</option>
+                    <option value="snake">🐍 Retro Snake</option>
+                    <option value="breaker">🧱 Brick Breaker</option>
+                    <option value="pong">🏓 Neon Pong</option>
                 </select>
             </div>
 
-            <div class="control-group">
-                <label for="romInput">Select ROM File</label>
-                <input type="file" id="romInput" accept=".nes,.snes,.smc,.gb,.gbc,.gba,.gen,.md,.z64,.n64,.nds,.iso,.bin,.zip">
+            <div class="flex items-center gap-4 text-sm font-semibold">
+                <div>Score: <span id="arcadeScore" style="color: var(--syn);">0</span></div>
+                <div>High Score: <span id="arcadeHighScore" style="color: var(--accent);">0</span></div>
+                <button class="btn-accent px-3 py-1.5 rounded text-xs" onclick="restartCurrentArcadeGame()">Restart Game</button>
             </div>
-
-            <button class="btn" onclick="loadRom()">Launch Game</button>
-            <button class="btn btn-toggle" id="controllerToggleBtn" onclick="toggleControllerMode()">Controller Mode: OFF</button>
         </div>
 
-        <div class="screen-wrapper nes" id="screenWrapper">
+        <!-- Arcade Screen Frame -->
+        <div class="screen-frame w-full h-[520px] relative flex items-center justify-center">
             <div class="crt-overlay"></div>
-            <div class="placeholder-screen" id="placeholder">
-                <h3>Ready to Play</h3>
-                <p>Select a console core, load your local ROM file, and click Launch Game.</p>
-            </div>
-            <div id="emulator-container"></div>
+            <canvas id="arcadeCanvas" width="800" height="520" class="w-full h-full block bg-black"></canvas>
         </div>
 
-        <!-- On-Screen Virtual Controller -->
-        <div class="virtual-controller" id="virtualController">
-            <div class="d-pad">
-                <div></div><div class="pad-btn">▲</div><div></div>
-                <div class="pad-btn">◀</div><div></div><div class="pad-btn">▶</div>
-                <div></div><div class="pad-btn">▼</div><div></div>
-            </div>
-            <div class="action-btns">
-                <button class="action-btn b-btn">B</button>
-                <button class="action-btn">A</button>
-            </div>
+        <div class="mt-4 text-center text-xs text-muted-custom card-bg p-3 rounded-lg w-full">
+            <span id="arcadeControlsTip"><strong>Controls:</strong> Arrow Keys / A & D to move, Spacebar to shoot.</span>
         </div>
-    </div>
-
-    <!-- TAB 2: HOMEMADE GAME -->
-    <div id="tab-homebrew" style="display: none; flex-direction: column; align-items: center; width: 100%;">
-        <div class="controls-card">
-            <p style="color: var(--muted); font-size: 14px;"><strong>Controls:</strong> Use <strong>A / D</strong> or <strong>Left / Right Arrows</strong> to move, and <strong>Spacebar</strong> to shoot.</p>
-        </div>
-        <div class="screen-wrapper">
-            <canvas id="homebrew-canvas" width="800" height="520"></canvas>
-        </div>
-    </div>
+    </main>
 
     <script>
-        // Tab Navigation
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        /* ----------------------------------------------------
+           1. CORE SYSTEM & ROM EMULATOR LOGIC
+        ---------------------------------------------------- */
+        function switchMainTab(tab) {
+            document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById('section-roms').classList.add('hidden');
+            document.getElementById('section-arcade').classList.add('hidden');
+
             if (tab === 'roms') {
-                document.getElementById('tab-roms').style.display = 'flex';
-                document.getElementById('tab-homebrew').style.display = 'none';
-                event.target.classList.add('active');
+                document.getElementById('section-roms').classList.remove('hidden');
+                document.getElementById('tab-btn-roms').classList.add('active');
             } else {
-                document.getElementById('tab-roms').style.display = 'none';
-                document.getElementById('tab-homebrew').style.display = 'flex';
-                event.target.classList.add('active');
-                initHomebrewGame();
+                document.getElementById('section-arcade').classList.remove('hidden');
+                document.getElementById('tab-btn-arcade').classList.add('active');
+                initArcadeSystem();
             }
         }
 
-        // Console Styling Update
         function updateConsoleStyle() {
             const system = document.getElementById('systemSelect').value;
             const wrapper = document.getElementById('screenWrapper');
-            wrapper.className = 'screen-wrapper ' + system;
+            wrapper.className = 'screen-frame w-full h-[500px] flex items-center justify-center relative ' + system;
         }
 
-        // ROM Loader Logic
         function loadRom() {
             const fileInput = document.getElementById('romInput');
             const systemSelect = document.getElementById('systemSelect');
-            const placeholder = document.getElementById('placeholder');
+            const placeholder = document.getElementById('romPlaceholder');
 
             if (!fileInput.files || fileInput.files.length === 0) {
-                alert("Please select a ROM file first.");
+                showToast("Please select a local ROM file first.");
                 return;
             }
 
@@ -400,92 +341,507 @@
             document.body.appendChild(script);
         }
 
-        // Controller Mode Toggle
         function toggleControllerMode() {
             const controller = document.getElementById('virtualController');
             const btn = document.getElementById('controllerToggleBtn');
-            controller.classList.toggle('visible');
-            if (controller.classList.contains('visible')) {
-                btn.classList.add('active');
-                btn.innerText = "Controller Mode: ON";
+            controller.classList.toggle('hidden');
+            if (!controller.classList.contains('hidden')) {
+                btn.classList.add('btn-toggle-active');
+                btn.innerText = "🎮 Controller Mode: ON";
             } else {
-                btn.classList.remove('active');
-                btn.innerText = "Controller Mode: OFF";
+                btn.classList.remove('btn-toggle-active');
+                btn.innerText = "🎮 Controller Mode: OFF";
             }
         }
 
-        // Homemade Space Shooter Game Logic
-        let gameInitialized = false;
-        function initHomebrewGame() {
-            if (gameInitialized) return;
-            gameInitialized = true;
+        function triggerKey(code, isPressed) {
+            const eventType = isPressed ? 'keydown' : 'keyup';
+            const event = new KeyboardEvent(eventType, { code: code, bubbles: true });
+            document.dispatchEvent(event);
+        }
 
-            const canvas = document.getElementById('homebrew-canvas');
-            const ctx = canvas.getContext('2d');
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 bg-slate-800 text-white px-4 py-2 rounded-lg border border-slate-700 shadow-2xl z-50 text-sm font-semibold';
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
 
-            let player = { x: 375, y: 460, w: 50, h: 20, speed: 6 };
+        /* ----------------------------------------------------
+           2. ARCADE MINI-GAMES ENGINE & CONTROLLER
+        ---------------------------------------------------- */
+        let canvas, ctx;
+        let activeGame = 'space';
+        let animationFrameId = null;
+
+        const keyState = {};
+        const highScores = { space: 0, snake: 0, breaker: 0, pong: 0 };
+
+        function initArcadeSystem() {
+            if (!canvas) {
+                canvas = document.getElementById('arcadeCanvas');
+                ctx = canvas.getContext('2d');
+
+                window.addEventListener('keydown', e => {
+                    keyState[e.code] = true;
+                    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code)) {
+                        if (document.getElementById('section-arcade').classList.contains('hidden') === false) {
+                            e.preventDefault();
+                        }
+                    }
+                });
+                window.addEventListener('keyup', e => {
+                    keyState[e.code] = false;
+                });
+            }
+            changeArcadeGame();
+        }
+
+        function changeArcadeGame() {
+            activeGame = document.getElementById('arcadeGameSelect').value;
+            updateArcadeTips();
+            updateScoreUI(0, highScores[activeGame]);
+
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+            if (activeGame === 'space') initSpaceGame();
+            else if (activeGame === 'snake') initSnakeGame();
+            else if (activeGame === 'breaker') initBreakerGame();
+            else if (activeGame === 'pong') initPongGame();
+        }
+
+        function restartCurrentArcadeGame() {
+            changeArcadeGame();
+        }
+
+        function updateScoreUI(score, highScore) {
+            document.getElementById('arcadeScore').innerText = score;
+            if (score > highScores[activeGame]) {
+                highScores[activeGame] = score;
+            }
+            document.getElementById('arcadeHighScore').innerText = highScores[activeGame];
+        }
+
+        function updateArcadeTips() {
+            const tipEl = document.getElementById('arcadeControlsTip');
+            if (activeGame === 'space') {
+                tipEl.innerHTML = "<strong>Space Defense:</strong> Use <strong>A / D</strong> or <strong>Left / Right Arrows</strong> to move, and <strong>Spacebar</strong> to shoot.";
+            } else if (activeGame === 'snake') {
+                tipEl.innerHTML = "<strong>Retro Snake:</strong> Use <strong>Arrow Keys</strong> or <strong>W, A, S, D</strong> to steer the snake.";
+            } else if (activeGame === 'breaker') {
+                tipEl.innerHTML = "<strong>Brick Breaker:</strong> Use <strong>A / D</strong> or <strong>Left / Right Arrows</strong> to move paddle.";
+            } else if (activeGame === 'pong') {
+                tipEl.innerHTML = "<strong>Neon Pong:</strong> Use <strong>W / S</strong> or <strong>Up / Down Arrows</strong> to move paddle against AI.";
+            }
+        }
+
+        /* ----------------------------------------------------
+           GAME 1: SPACE DEFENSE
+        ---------------------------------------------------- */
+        function initSpaceGame() {
+            let score = 0;
+            let gameOver = false;
+            let lastShotTime = 0;
+
+            const player = { x: canvas.width / 2 - 25, y: canvas.height - 40, w: 50, h: 18, speed: 7 };
             let bullets = [];
             let enemies = [];
-            let keys = {};
+            let enemySpeed = 1.5;
 
-            for (let i = 0; i < 6; i++) {
-                for (let j = 0; j < 3; j++) {
-                    enemies.push({ x: 80 + i * 110, y: 40 + j * 50, w: 40, h: 20, alive: true });
-                }
-            }
-
-            window.addEventListener('keydown', e => keys[e.code] = true);
-            window.addEventListener('keyup', e => keys[e.code] = false);
-
-            function update() {
-                if ((keys['ArrowLeft'] || keys['KeyA']) && player.x > 0) player.x -= player.speed;
-                if ((keys['ArrowRight'] || keys['KeyD']) && player.x < canvas.width - player.w) player.x += player.speed;
-
-                if (keys['Space']) {
-                    if (bullets.length === 0 || bullets[bullets.length - 1].y < canvas.height - 60) {
-                        bullets.push({ x: player.x + player.w / 2 - 2, y: player.y, w: 4, h: 10 });
+            function spawnEnemies() {
+                enemies = [];
+                for (let r = 0; r < 3; r++) {
+                    for (let c = 0; c < 8; c++) {
+                        enemies.push({
+                            x: 60 + c * 85,
+                            y: 40 + r * 45,
+                            w: 45,
+                            h: 22,
+                            alive: true
+                        });
                     }
                 }
-
-                bullets.forEach((b, bi) => {
-                    b.y -= 8;
-                    enemies.forEach(e => {
-                        if (e.alive && b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
-                            e.alive = false;
-                            bullets.splice(bi, 1);
-                        }
-                    });
-                });
-
-                bullets = bullets.filter(b => b.y > 0);
             }
 
-            function draw() {
+            spawnEnemies();
+
+            function loop(timestamp) {
+                // Update
+                if (!gameOver) {
+                    if ((keyState['ArrowLeft'] || keyState['KeyA']) && player.x > 0) player.x -= player.speed;
+                    if ((keyState['ArrowRight'] || keyState['KeyD']) && player.x < canvas.width - player.w) player.x += player.speed;
+
+                    // Shooting cooldown (200ms)
+                    if (keyState['Space'] && timestamp - lastShotTime > 200) {
+                        bullets.push({ x: player.x + player.w / 2 - 2, y: player.y, w: 4, h: 12 });
+                        lastShotTime = timestamp;
+                    }
+
+                    // Move Bullets
+                    bullets.forEach(b => b.y -= 9);
+                    bullets = bullets.filter(b => b.y > -20);
+
+                    // Move Enemies
+                    let shiftDown = false;
+                    let remaining = 0;
+
+                    enemies.forEach(e => {
+                        if (e.alive) {
+                            remaining++;
+                            e.x += enemySpeed;
+                            if (e.x + e.w > canvas.width - 20 || e.x < 20) shiftDown = true;
+                            if (e.y + e.h >= player.y) gameOver = true;
+                        }
+                    });
+
+                    if (shiftDown) {
+                        enemySpeed = -enemySpeed;
+                        enemies.forEach(e => { if (e.alive) e.y += 15; });
+                    }
+
+                    if (remaining === 0) {
+                        enemySpeed = Math.sign(enemySpeed) * (Math.abs(enemySpeed) + 0.5);
+                        spawnEnemies();
+                    }
+
+                    // Bullet & Enemy Collision
+                    bullets.forEach((b, bi) => {
+                        enemies.forEach(e => {
+                            if (e.alive && b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
+                                e.alive = false;
+                                bullets.splice(bi, 1);
+                                score += 100;
+                                updateScoreUI(score, highScores['space']);
+                            }
+                        });
+                    });
+                }
+
+                // Render
                 ctx.fillStyle = '#0f1419';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                // Player
+                // Draw Player
                 ctx.fillStyle = '#5b9fd4';
                 ctx.fillRect(player.x, player.y, player.w, player.h);
 
-                // Bullets
+                // Draw Bullets
                 ctx.fillStyle = '#6bcf9a';
                 bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
 
-                // Enemies
+                // Draw Enemies
                 ctx.fillStyle = '#e88a8a';
                 enemies.forEach(e => {
                     if (e.alive) ctx.fillRect(e.x, e.y, e.w, e.h);
                 });
+
+                if (gameOver) {
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#e88a8a';
+                    ctx.font = 'bold 36px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 10);
+                    ctx.fillStyle = '#e8eef7';
+                    ctx.font = '16px sans-serif';
+                    ctx.fillText('Click Restart Game to play again', canvas.width / 2, canvas.height / 2 + 30);
+                } else {
+                    animationFrameId = requestAnimationFrame(loop);
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(loop);
+        }
+
+        /* ----------------------------------------------------
+           GAME 2: RETRO SNAKE
+        ---------------------------------------------------- */
+        function initSnakeGame() {
+            const gridSize = 20;
+            const cols = canvas.width / gridSize;
+            const rows = canvas.height / gridSize;
+
+            let snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+            let dir = { x: 1, y: 0 };
+            let nextDir = { x: 1, y: 0 };
+            let food = spawnFood();
+            let score = 0;
+            let gameOver = false;
+            let lastUpdate = 0;
+            const speedMs = 90;
+
+            function spawnFood() {
+                return {
+                    x: Math.floor(Math.random() * cols),
+                    y: Math.floor(Math.random() * rows)
+                };
+            }
+
+            function loop(timestamp) {
+                if (!lastUpdate) lastUpdate = timestamp;
+
+                if (!gameOver && timestamp - lastUpdate > speedMs) {
+                    lastUpdate = timestamp;
+
+                    // Handle input directions
+                    if ((keyState['ArrowUp'] || keyState['KeyW']) && dir.y === 0) nextDir = { x: 0, y: -1 };
+                    if ((keyState['ArrowDown'] || keyState['KeyS']) && dir.y === 0) nextDir = { x: 0, y: 1 };
+                    if ((keyState['ArrowLeft'] || keyState['KeyA']) && dir.x === 0) nextDir = { x: -1, y: 0 };
+                    if ((keyState['ArrowRight'] || keyState['KeyD']) && dir.x === 0) nextDir = { x: 1, y: 0 };
+
+                    dir = nextDir;
+                    const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+                    // Wall Collision
+                    if (head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows) {
+                        gameOver = true;
+                    }
+
+                    // Self Collision
+                    for (let segment of snake) {
+                        if (head.x === segment.x && head.y === segment.y) {
+                            gameOver = true;
+                        }
+                    }
+
+                    if (!gameOver) {
+                        snake.unshift(head);
+                        if (head.x === food.x && head.y === food.y) {
+                            score += 50;
+                            updateScoreUI(score, highScores['snake']);
+                            food = spawnFood();
+                        } else {
+                            snake.pop();
+                        }
+                    }
+                }
+
+                // Render
+                ctx.fillStyle = '#0f1419';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw Food
+                ctx.fillStyle = '#e88a8a';
+                ctx.fillRect(food.x * gridSize + 2, food.y * gridSize + 2, gridSize - 4, gridSize - 4);
+
+                // Draw Snake
+                snake.forEach((seg, i) => {
+                    ctx.fillStyle = i === 0 ? '#6bcf9a' : '#5b9fd4';
+                    ctx.fillRect(seg.x * gridSize + 1, seg.y * gridSize + 1, gridSize - 2, gridSize - 2);
+                });
+
+                if (gameOver) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#e88a8a';
+                    ctx.font = 'bold 36px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('SNAKE CRASHED', canvas.width / 2, canvas.height / 2 - 10);
+                } else {
+                    animationFrameId = requestAnimationFrame(loop);
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(loop);
+        }
+
+        /* ----------------------------------------------------
+           GAME 3: BRICK BREAKER
+        ---------------------------------------------------- */
+        function initBreakerGame() {
+            let score = 0;
+            let gameOver = false;
+
+            const paddle = { x: canvas.width / 2 - 60, y: canvas.height - 30, w: 120, h: 14, speed: 8 };
+            const ball = { x: canvas.width / 2, y: canvas.height - 50, vx: 4, vy: -5, radius: 7 };
+
+            const brickRows = 4;
+            const brickCols = 9;
+            const brickW = 75;
+            const brickH = 20;
+            const brickPadding = 10;
+            const offsetTop = 40;
+            const offsetLeft = 20;
+
+            const bricks = [];
+            for (let r = 0; r < brickRows; r++) {
+                bricks[r] = [];
+                for (let c = 0; c < brickCols; c++) {
+                    bricks[r][c] = { x: 0, y: 0, status: 1 };
+                }
             }
 
             function loop() {
-                update();
-                draw();
-                requestAnimationFrame(loop);
+                if (!gameOver) {
+                    if ((keyState['ArrowLeft'] || keyState['KeyA']) && paddle.x > 0) paddle.x -= paddle.speed;
+                    if ((keyState['ArrowRight'] || keyState['KeyD']) && paddle.x < canvas.width - paddle.w) paddle.x += paddle.speed;
+
+                    ball.x += ball.vx;
+                    ball.y += ball.vy;
+
+                    // Wall bounce
+                    if (ball.x + ball.radius > canvas.width || ball.x - ball.radius < 0) ball.vx = -ball.vx;
+                    if (ball.y - ball.radius < 0) ball.vy = -ball.vy;
+
+                    // Bottom fail
+                    if (ball.y + ball.radius > canvas.height) gameOver = true;
+
+                    // Paddle Bounce
+                    if (ball.y + ball.radius >= paddle.y && ball.x >= paddle.x && ball.x <= paddle.x + paddle.w) {
+                        ball.vy = -Math.abs(ball.vy);
+                    }
+
+                    // Brick Collision
+                    for (let r = 0; r < brickRows; r++) {
+                        for (let c = 0; c < brickCols; c++) {
+                            const b = bricks[r][c];
+                            if (b.status === 1) {
+                                const bx = c * (brickW + brickPadding) + offsetLeft;
+                                const by = r * (brickH + brickPadding) + offsetTop;
+                                b.x = bx;
+                                b.y = by;
+
+                                if (ball.x > bx && ball.x < bx + brickW && ball.y > by && ball.y < by + brickH) {
+                                    ball.vy = -ball.vy;
+                                    b.status = 0;
+                                    score += 20;
+                                    updateScoreUI(score, highScores['breaker']);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Render
+                ctx.fillStyle = '#0f1419';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Draw Paddle
+                ctx.fillStyle = '#5b9fd4';
+                ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+
+                // Draw Ball
+                ctx.fillStyle = '#6bcf9a';
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw Bricks
+                for (let r = 0; r < brickRows; r++) {
+                    for (let c = 0; c < brickCols; c++) {
+                        if (bricks[r][c].status === 1) {
+                            ctx.fillStyle = r % 2 === 0 ? '#e88a8a' : '#8b9bb4';
+                            ctx.fillRect(bricks[r][c].x, bricks[r][c].y, brickW, brickH);
+                        }
+                    }
+                }
+
+                if (gameOver) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.75)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#e88a8a';
+                    ctx.font = 'bold 36px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 10);
+                } else {
+                    animationFrameId = requestAnimationFrame(loop);
+                }
             }
 
-            loop();
+            animationFrameId = requestAnimationFrame(loop);
+        }
+
+        /* ----------------------------------------------------
+           GAME 4: NEON PONG
+        ---------------------------------------------------- */
+        function initPongGame() {
+            let playerScore = 0;
+            let aiScore = 0;
+
+            const p1 = { x: 20, y: canvas.height / 2 - 45, w: 12, h: 90, speed: 7 };
+            const ai = { x: canvas.width - 32, y: canvas.height / 2 - 45, w: 12, h: 90, speed: 4.5 };
+            const ball = { x: canvas.width / 2, y: canvas.height / 2, vx: 5, vy: 3, radius: 8 };
+
+            function resetBall() {
+                ball.x = canvas.width / 2;
+                ball.y = canvas.height / 2;
+                ball.vx = -ball.vx;
+                ball.vy = (Math.random() > 0.5 ? 1 : -1) * 3;
+            }
+
+            function loop() {
+                // Player Input
+                if ((keyState['ArrowUp'] || keyState['KeyW']) && p1.y > 0) p1.y -= p1.speed;
+                if ((keyState['ArrowDown'] || keyState['KeyS']) && p1.y < canvas.height - p1.h) p1.y += p1.speed;
+
+                // AI Engine Tracking
+                if (ball.y < ai.y + ai.h / 2 && ai.y > 0) ai.y -= ai.speed;
+                if (ball.y > ai.y + ai.h / 2 && ai.y < canvas.height - ai.h) ai.y += ai.speed;
+
+                // Move Ball
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+
+                // Top & Bottom Walls
+                if (ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height) {
+                    ball.vy = -ball.vy;
+                }
+
+                // Paddle Collisions
+                if (ball.x - ball.radius <= p1.x + p1.w && ball.y >= p1.y && ball.y <= p1.y + p1.h) {
+                    ball.vx = Math.abs(ball.vx) + 0.2;
+                }
+                if (ball.x + ball.radius >= ai.x && ball.y >= ai.y && ball.y <= ai.y + ai.h) {
+                    ball.vx = -Math.abs(ball.vx) - 0.2;
+                }
+
+                // Scoring
+                if (ball.x < 0) {
+                    aiScore++;
+                    resetBall();
+                } else if (ball.x > canvas.width) {
+                    playerScore++;
+                    updateScoreUI(playerScore, highScores['pong']);
+                    resetBall();
+                }
+
+                // Render
+                ctx.fillStyle = '#0f1419';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Center dashed line
+                ctx.setLineDash([10, 10]);
+                ctx.strokeStyle = '#2a3548';
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, 0);
+                ctx.lineTo(canvas.width / 2, canvas.height);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw Paddles
+                ctx.fillStyle = '#5b9fd4';
+                ctx.fillRect(p1.x, p1.y, p1.w, p1.h);
+
+                ctx.fillStyle = '#e88a8a';
+                ctx.fillRect(ai.x, ai.y, ai.w, ai.h);
+
+                // Draw Ball
+                ctx.fillStyle = '#6bcf9a';
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Draw Scores
+                ctx.fillStyle = '#e8eef7';
+                ctx.font = '24px monospace';
+                ctx.fillText(playerScore, canvas.width / 4, 40);
+                ctx.fillText(aiScore, (3 * canvas.width) / 4, 40);
+
+                animationFrameId = requestAnimationFrame(loop);
+            }
+
+            animationFrameId = requestAnimationFrame(loop);
         }
     </script>
 </body>
