@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Retro OS - Multi-System Game Hub</title>
+    <style>
+        :root {
+            --bg:     #0f1419;   /* main background */
+            --card:   #1a2332;   /* card / box background */
+            --text:   #e8eef7;   /* main text */
+            --muted:  #8b9bb4;   /* secondary text */
+            --accent: #5b9fd4;   /* blue accent */
+            --syn:    #6bcf9a;   /* green indicator */
+            --ant:    #e88a8a;   /* red indicator */
+            --border: #2a3548;   /* border color */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        p.subtitle {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* Navigation Tabs */
+        .tab-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background-color: var(--card);
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text);
+            border-color: var(--accent);
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        /* Control Panel Card */
+        .controls-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            max-width: 850px;
+            width: 100%;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: bold;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        select, input[type="file"], .btn {
+            background-color: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        select:focus {
+            border-color: var(--accent);
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: var(--bg);
+            font-weight: bold;
+            border: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-toggle {
+            background-color: var(--card);
+            color: var(--syn);
+            border: 1px solid var(--syn);
+        }
+
+        .btn-toggle.active {
+            background-color: var(--syn);
+            color: var(--bg);
+        }
+
+        /* Screen Wrapper & CRT Overlays */
+        .screen-wrapper {
+            position: relative;
+            width: 800px;
+            height: 520px;
+            max-width: 100%;
+            background-color: #000;
+            border-radius: 12px;
+            border: 3px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Console Bezel Styling */
+        .screen-wrapper.nes { border-color: #e88a8a; }
+        .screen-wrapper.snes { border-color: #8f75be; }
+        .screen-wrapper.gb { border-color: #6bcf9a; }
+        .screen-wrapper.gba { border-color: #5b9fd4; }
+
+        .crt-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            );
+            background-size: 100% 4px;
+            opacity: 0.6;
+        }
+
+        .placeholder-screen {
+            text-align: center;
+            color: var(--muted);
+            padding: 20px;
+        }
+
+        .placeholder-screen h3 {
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        #emulator-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* On-Screen Controller Mode */
+        .virtual-controller {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            user-select: none;
+        }
+
+        .virtual-controller.visible {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .d-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 45px);
+            grid-template-rows: repeat(3, 45px);
+            gap: 2px;
+        }
+
+        .pad-btn {
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-weight: bold;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .pad-btn:active {
+            background-color: var(--accent);
+            color: var(--bg);
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background-color: var(--ant);
+            color: var(--bg);
+            font-weight: bold;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .action-btn.b-btn {
+            background-color: var(--syn);
+        }
+
+        /* Canvas Game Section */
+        #homebrew-canvas {
+            background-color: #000;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Air Retro OS</h1>
+        <p class="subtitle">WebAssembly Retro Emulation Engine & Classic Arcade Platform</p>
+    </header>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('roms')">ROM Emulator</button>
+        <button class="tab-btn" onclick="switchTab('homebrew')">Built-in Game (Space Defense)</button>
+    </div>
+
+    <!-- TAB 1: ROM EMULATOR -->
+    <div id="tab-roms" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <div class="controls-card">
+            <div class="control-group">
+                <label for="systemSelect">System</label>
+                <select id="systemSelect" onchange="updateConsoleStyle()">
+                    <option value="nes">Nintendo (NES)</option>
+                    <option value="snes">Super Nintendo (SNES)</option>
+                    <option value="gb">Game Boy</option>
+                    <option value="gbc">Game Boy Color</option>
+                    <option value="gba">Game Boy Advance</option>
+                    <option value="segaMD">Sega Genesis</option>
+                    <option value="n64">Nintendo 64</option>
+                    <option value="nds">Nintendo DS</option>
+                    <option value="psx">PlayStation 1</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="romInput">Select ROM File</label>
+                <input type="file" id="romInput" accept=".nes,.snes,.smc,.gb,.gbc,.gba,.gen,.md,.z64,.n64,.nds,.iso,.bin,.zip">
+            </div>
+
+            <button class="btn" onclick="loadRom()">Launch Game</button>
+            <button class="btn btn-toggle" id="controllerToggleBtn" onclick="toggleControllerMode()">Controller Mode: OFF</button>
+        </div>
+
+        <div class="screen-wrapper nes" id="screenWrapper">
+            <div class="crt-overlay"></div>
+            <div class="placeholder-screen" id="placeholder">
+                <h3>Ready to Play</h3>
+                <p>Select a console core, load your local ROM file, and click Launch Game.</p>
+            </div>
+            <div id="emulator-container"></div>
+        </div>
+
+        <!-- On-Screen Virtual Controller -->
+        <div class="virtual-controller" id="virtualController">
+            <div class="d-pad">
+                <div></div><div class="pad-btn">▲</div><div></div>
+                <div class="pad-btn">◀</div><div></div><div class="pad-btn">▶</div>
+                <div></div><div class="pad-btn">▼</div><div></div>
+            </div>
+            <div class="action-btns">
+                <button class="action-btn b-btn">B</button>
+                <button class="action-btn">A</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: HOMEMADE GAME -->
+    <div id="tab-homebrew" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+        <div class="controls-card">
+            <p style="color: var(--muted); font-size: 14px;"><strong>Controls:</strong> Use <strong>A / D</strong> or <strong>Left / Right Arrows</strong> to move, and <strong>Spacebar</strong> to shoot.</p>
+        </div>
+        <div class="screen-wrapper">
+            <canvas id="homebrew-canvas" width="800" height="520"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Tab Navigation
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if (tab === 'roms') {
+                document.getElementById('tab-roms').style.display = 'flex';
+                document.getElementById('tab-homebrew').style.display = 'none';
+                event.target.classList.add('active');
+            } else {
+                document.getElementById('tab-roms').style.display = 'none';
+                document.getElementById('tab-homebrew').style.display = 'flex';
+                event.target.classList.add('active');
+                initHomebrewGame();
+            }
+        }
+
+        // Console Styling Update
+        function updateConsoleStyle() {
+            const system = document.getElementById('systemSelect').value;
+            const wrapper = document.getElementById('screenWrapper');
+            wrapper.className = 'screen-wrapper ' + system;
+        }
+
+        // ROM Loader Logic
+        function loadRom() {
+            const fileInput = document.getElementById('romInput');
+            const systemSelect = document.getElementById('systemSelect');
+            const placeholder = document.getElementById('placeholder');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Please select a ROM file first.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const romUrl = URL.createObjectURL(file);
+
+            if (placeholder) placeholder.style.display = 'none';
+
+            window.EJS_player = "#emulator-container";
+            window.EJS_core = systemSelect.value;
+            window.EJS_gameUrl = romUrl;
+            window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
+
+            const oldScript = document.getElementById('emulatorjs-script');
+            if (oldScript) oldScript.remove();
+
+            const script = document.createElement('script');
+            script.id = 'emulatorjs-script';
+            script.src = "https://cdn.emulatorjs.org/stable/data/loader.js";
+            document.body.appendChild(script);
+        }
+
+        // Controller Mode Toggle
+        function toggleControllerMode() {
+            const controller = document.getElementById('virtualController');
+            const btn = document.getElementById('controllerToggleBtn');
+            controller.classList.toggle('visible');
+            if (controller.classList.contains('visible')) {
+                btn.classList.add('active');
+                btn.innerText = "Controller Mode: ON";
+            } else {
+                btn.classList.remove('active');
+                btn.innerText = "Controller Mode: OFF";
+            }
+        }
+
+        // Homemade Space Shooter Game Logic
+        let gameInitialized = false;
+        function initHomebrewGame() {
+            if (gameInitialized) return;
+            gameInitialized = true;
+
+            const canvas = document.getElementById('homebrew-canvas');
+            const ctx = canvas.getContext('2d');
+
+            let player = { x: 375, y: 460, w: 50, h: 20, speed: 6 };
+            let bullets = [];
+            let enemies = [];
+            let keys = {};
+
+            for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 3; j++) {
+                    enemies.push({ x: 80 + i * 110, y: 40 + j * 50, w: 40, h: 20, alive: true });
+                }
+            }
+
+            window.addEventListener('keydown', e => keys[e.code] = true);
+            window.addEventListener('keyup', e => keys[e.code] = false);
+
+            function update() {
+                if ((keys['ArrowLeft'] || keys['KeyA']) && player.x > 0) player.x -= player.speed;
+                if ((keys['ArrowRight'] || keys['KeyD']) && player.x < canvas.width - player.w) player.x += player.speed;
+
+                if (keys['Space']) {
+                    if (bullets.length === 0 || bullets[bullets.length - 1].y < canvas.height - 60) {
+                        bullets.push({ x: player.x + player.w / 2 - 2, y: player.y, w: 4, h: 10 });
+                    }
+                }
+
+                bullets.forEach((b, bi) => {
+                    b.y -= 8;
+                    enemies.forEach(e => {
+                        if (e.alive && b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
+                            e.alive = false;
+                            bullets.splice(bi, 1);
+                        }
+                    });
+                });
+
+                bullets = bullets.filter(b => b.y > 0);
+            }
+
+            function draw() {
+                ctx.fillStyle = '#0f1419';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Player
+                ctx.fillStyle = '#5b9fd4';
+                ctx.fillRect(player.x, player.y, player.w, player.h);
+
+                // Bullets
+                ctx.fillStyle = '#6bcf9a';
+                bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+
+                // Enemies
+                ctx.fillStyle = '#e88a8a';
+                enemies.forEach(e => {
+                    if (e.alive) ctx.fillRect(e.x, e.y, e.w, e.h);
+                });
+            }
+
+            function loop() {
+                update();
+                draw();
+                requestAnimationFrame(loop);
+            }
+
+            loop();
+        }
+    </script>
+</body>
+</html>
