@@ -75,6 +75,7 @@ private:
 
     uint8_t program_[kMaxProgramBytes];
     size_t programLength_;
+    size_t pc_;
     int16_t vars_[kVariableCount];
     Sprite sprites_[kMaxSprites];
     uint16_t background_;
