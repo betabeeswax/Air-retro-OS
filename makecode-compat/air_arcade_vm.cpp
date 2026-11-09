@@ -22,7 +22,7 @@ bool Vm::load(const uint8_t* bytes, size_t length) {
 void Vm::reset() {
     pc_ = 0;
     std::memset(vars_, 0, sizeof(vars_));
-    std::memset(sprites_, 0, sizeof(sprites_));
+    for (size_t i = 0; i < kMaxSprites; ++i) sprites_[i] = Sprite{};
     background_ = 0x0000;
     score_ = 0;
     faulted_ = false;
@@ -119,8 +119,16 @@ void Vm::frame(Host& host) {
         case Op::CreateSprite: {
             uint8_t id, w, h; int16_t x, y; uint16_t color;
             if (!readU8(id) || !readI16(x) || !readI16(y) || !readU8(w) || !readU8(h) ||
-                !readU16(color) || id >= kMaxSprites || w == 0 || h == 0) { faulted_ = true; break; }
-            sprites_[id] = {true, x, y, 0, 0, w, h, color};
+                !readU16(color) || id >= kMaxSprites || w == 0 || h == 0 ||
+                w > kScreenWidth || h > kScreenHeight) { faulted_ = true; break; }
+            sprites_[id].active = true;
+            sprites_[id].x = x;
+            sprites_[id].y = y;
+            sprites_[id].vx = 0;
+            sprites_[id].vy = 0;
+            sprites_[id].width = w;
+            sprites_[id].height = h;
+            sprites_[id].color = color;
             break;
         }
 
