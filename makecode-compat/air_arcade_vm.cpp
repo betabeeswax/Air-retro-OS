@@ -5,7 +5,7 @@
 namespace air_arcade {
 
 Vm::Vm()
-    : programLength_(0), background_(0x0000), score_(0), loaded_(false), faulted_(false) {
+    : programLength_(0), pc_(0), background_(0x0000), score_(0), loaded_(false), faulted_(false) {
     std::memset(program_, 0, sizeof(program_));
     reset();
 }
@@ -20,6 +20,7 @@ bool Vm::load(const uint8_t* bytes, size_t length) {
 }
 
 void Vm::reset() {
+    pc_ = 0;
     std::memset(vars_, 0, sizeof(vars_));
     std::memset(sprites_, 0, sizeof(sprites_));
     background_ = 0x0000;
