@@ -1,0 +1,24 @@
+name: AIR Arcade VM
+
+on:
+  push:
+    branches: [main, feature/makecode-arcade-compat]
+    paths:
+      - "makecode-compat/**"
+      - ".github/workflows/air-arcade-vm.yml"
+  pull_request:
+    paths:
+      - "makecode-compat/**"
+      - ".github/workflows/air-arcade-vm.yml"
+
+jobs:
+  host-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S makecode-compat -B build/air-arcade
+      - name: Build
+        run: cmake --build build/air-arcade --parallel
+      - name: Test
+        run: ctest --test-dir build/air-arcade --output-on-failure
